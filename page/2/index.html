@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+
+
+<html lang="zh">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+     
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      
+<section class="cover">
+    
+  <div class="cover-frame">
+    <div class="bg-box">
+      <img src="/images/cover1.jpg" alt="image frame" />
+    </div>
+    <div class="cover-inner text-center text-white">
+      <h1><a href="/">书</a></h1>
+      <div id="subtitle-box">
+        
+        <span id="subtitle"></span>
+        
+      </div>
+      <div>
+        
+      </div>
+    </div>
+  </div>
+  <div class="cover-learn-more">
+    <a href="javascript:void(0)" class="anchor"><i class="ri-arrow-down-line"></i></a>
+  </div>
+</section>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js"></script>
+
+
+<!-- Subtitle -->
+
+  <script>
+    try {
+      var typed = new Typed("#subtitle", {
+        strings: ['常思天下梦，闲翻治世书', '不平真意在，难凉热血无', '才资出我类，余生有谁读'],
+        startDelay: 0,
+        typeSpeed: 200,
+        loop: true,
+        backSpeed: 100,
+        showCursor: true
+      });
+    } catch (err) {
+      console.log(err)
+    }
+  </script>
+  
+<div id="main">
+  <section class="outer">
+  
+  
+<div class="notice" style="margin-top:50px">
+    <i class="ri-heart-fill"></i>
+    <div class="notice-content">有所欲，有所为，有所感，有所思，有所得。得而志之，是谓之书。书人之生，是谓书生。</div>
+</div>
+
+
+<style>
+    .notice {
+        padding: 20px;
+        border: 1px dashed #e6e6e6;
+        color: #969696;
+        position: relative;
+        display: inline-block;
+        width: 100%;
+        background: #fbfbfb50;
+        border-radius: 10px;
+    }
+
+    .notice i {
+        float: left;
+        color: #999;
+        font-size: 16px;
+        padding-right: 10px;
+        vertical-align: middle;
+        margin-top: -2px;
+    }
+
+    .notice-content {
+        display: initial;
+        vertical-align: middle;
+    }
+</style>
+  
+  <article class="articles">
+    
+    
+    
+    
+    <article
+  id="post-ES11：缓存和冲刷"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/11/27/ES11%EF%BC%9A%E7%BC%93%E5%AD%98%E5%92%8C%E5%86%B2%E5%88%B7/"
+    >缓存和冲刷</a> 
+</h2>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2020/11/27/ES11%EF%BC%9A%E7%BC%93%E5%AD%98%E5%92%8C%E5%86%B2%E5%88%B7/" class="article-date">
+  <time datetime="2020-11-27T10:01:56.288Z" itemprop="datePublished">2020-11-27</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/ElasticSearch/">ElasticSearch</a>
+  </div>
+   
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="ES11：缓存和冲刷"><a href="#ES11：缓存和冲刷" class="headerlink" title="ES11：缓存和冲刷"></a>ES11：缓存和冲刷</h1><h3 id="Flush"><a href="#Flush" class="headerlink" title="Flush"></a>Flush</h3><p>保证将数据从 [transaction log]刷到Lucene</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">POST twitter&#x2F;_flush?wait_if_ongoing</span><br><span class="line">wait_if_ongoing：前一个刷新没执行，是否等待</span><br></pre></td></tr></table></figure>
+
+<h3 id="Refresh"><a href="#Refresh" class="headerlink" title="Refresh"></a>Refresh</h3><p>使上次refresh之后的所有操作变得可搜索</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">POST  &#x2F;twitter&#x2F;_refresh</span><br></pre></td></tr></table></figure>
+<h4 id="1-支持-refresh参数的请求接口"><a href="#1-支持-refresh参数的请求接口" class="headerlink" title="1. 支持?refresh参数的请求接口"></a>1. 支持?refresh参数的请求接口</h4><p>文档Document的Index, Update, Delete, Bulk支持刷新。</p>
+<h4 id="2-选项"><a href="#2-选项" class="headerlink" title="2. 选项"></a>2. 选项</h4><ul>
+<li><p>Empty string or <code>true</code> ：立即刷新索引，使最新修改可搜索。</p>
+</li>
+<li><p>wait_for ：直到出现一次显式的refresh，再刷新索引。</p>
+</li>
+<li><p><code>false</code> (the default) : 不采取任何操作，直到请求接口返回。</p>
+<h4 id="3-如何选择"><a href="#3-如何选择" class="headerlink" title="3. 如何选择"></a>3. 如何选择</h4><p>立即刷新会造成索引碎片。导致索引、搜索、合并时的性能损耗。<br>尽量不开启刷新。</p>
+</li>
+</ul>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%8AElasticSearch%E3%80%8B/" rel="tag">《ElasticSearch》</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+   
+</article>
+
+    
+    <article
+  id="post-ES10：分词器调试"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/11/27/ES10%EF%BC%9A%E5%88%86%E8%AF%8D%E5%99%A8%E8%B0%83%E8%AF%95/"
+    >分词器调试</a> 
+</h2>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2020/11/27/ES10%EF%BC%9A%E5%88%86%E8%AF%8D%E5%99%A8%E8%B0%83%E8%AF%95/" class="article-date">
+  <time datetime="2020-11-27T09:35:32.554Z" itemprop="datePublished">2020-11-27</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/ElasticSearch/">ElasticSearch</a>
+  </div>
+   
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <p>ES10：分词器调试</p>
+<h3 id="使用分词器查看分词结果"><a href="#使用分词器查看分词结果" class="headerlink" title="使用分词器查看分词结果"></a>使用分词器查看分词结果</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">GET _analyze</span><br><span class="line">&#123;</span><br><span class="line">  &quot;tokenizer&quot; : &quot;keyword&quot;,</span><br><span class="line">  &quot;filter&quot; : [&quot;lowercase&quot;],</span><br><span class="line">  &quot;char_filter&quot; : [&quot;html_strip&quot;],</span><br><span class="line">  &quot;explain&quot;  :  true,</span><br><span class="line">  &quot;text&quot; : &quot;this is a &lt;b&gt;test&lt;&#x2F;b&gt;&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%8AElasticSearch%E3%80%8B/" rel="tag">《ElasticSearch》</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+   
+</article>
+
+    
+    <article
+  id="post-ES9：设置Settings"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+     
+    <div class="article-meta">
+      <a href="/2020/11/27/ES9%EF%BC%9A%E8%AE%BE%E7%BD%AESettings/" class="article-date">
+  <time datetime="2020-11-27T09:21:49.417Z" itemprop="datePublished">2020-11-27</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="ES9：设置Settings"><a href="#ES9：设置Settings" class="headerlink" title="ES9：设置Settings"></a>ES9：设置Settings</h1><h2 id="获取设置"><a href="#获取设置" class="headerlink" title="获取设置"></a>获取设置</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 单个</span><br><span class="line">GET &#x2F;twitter&#x2F;_settings</span><br><span class="line"># 多值</span><br><span class="line">GET  &#x2F;twitter,kimchy&#x2F;_settings  </span><br><span class="line"># 全部</span><br><span class="line">GET  &#x2F;_all&#x2F;_settings  </span><br><span class="line"># 通配</span><br><span class="line">GET  &#x2F;log_2013_*&#x2F;_settings</span><br></pre></td></tr></table></figure>
+
+<h2 id="恢复默认值"><a href="#恢复默认值" class="headerlink" title="恢复默认值"></a>恢复默认值</h2><p>设置为null</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">PUT &#x2F;twitter&#x2F;_settings</span><br><span class="line">&#123;</span><br><span class="line">    &quot;index&quot; : &#123;</span><br><span class="line">        &quot;refresh_interval&quot; : null</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="定义新分词器"><a href="#定义新分词器" class="headerlink" title="定义新分词器"></a>定义新分词器</h2><p>需要先关闭索引，再打开索引</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">POST &#x2F;twitter&#x2F;_close</span><br><span class="line"></span><br><span class="line">PUT &#x2F;twitter&#x2F;_settings</span><br><span class="line">&#123;</span><br><span class="line">  &quot;analysis&quot; : &#123;</span><br><span class="line">    &quot;analyzer&quot;:&#123;</span><br><span class="line">      &quot;content&quot;:&#123;</span><br><span class="line">        &quot;type&quot;:&quot;custom&quot;,</span><br><span class="line">        &quot;tokenizer&quot;:&quot;whitespace&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST &#x2F;twitter&#x2F;_open</span><br></pre></td></tr></table></figure>
+
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+    
+ 
+   
+</article>
+
+    
+    <article
+  id="post-ES3：别名Alias"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/11/27/ES3%EF%BC%9A%E5%88%AB%E5%90%8DAlias/"
+    >别名Alias</a> 
+</h2>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2020/11/27/ES3%EF%BC%9A%E5%88%AB%E5%90%8DAlias/" class="article-date">
+  <time datetime="2020-11-27T08:59:29.906Z" itemprop="datePublished">2020-11-27</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/ElasticSearch/">ElasticSearch</a>
+  </div>
+   
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="ES3：别名Alias"><a href="#ES3：别名Alias" class="headerlink" title="ES3：别名Alias"></a>ES3：别名Alias</h1><h2 id="创建别名"><a href="#创建别名" class="headerlink" title="创建别名"></a>创建别名</h2><h3 id="1-为存在的索引创建别名"><a href="#1-为存在的索引创建别名" class="headerlink" title="1. 为存在的索引创建别名"></a>1. 为存在的索引创建别名</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">PUT &#x2F;&#123;index&#125;&#x2F;_alias&#x2F;&#123;name&#125;</span><br><span class="line">_alias可以用_aliases替换</span><br><span class="line"></span><br><span class="line">PUT &#x2F;users&#x2F;_alias&#x2F;user_12</span><br><span class="line">&#123;</span><br><span class="line">    &quot;routing&quot; : &quot;12&quot;,</span><br><span class="line">    &quot;filter&quot; : &#123;</span><br><span class="line">        &quot;term&quot; : &#123;</span><br><span class="line">            &quot;user_id&quot; : 12</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-为存在的索引关联别名"><a href="#2-为存在的索引关联别名" class="headerlink" title="2. 为存在的索引关联别名"></a>2. 为存在的索引关联别名</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">#添加和删除别名</span><br><span class="line">POST &#x2F;_aliases</span><br><span class="line">&#123;</span><br><span class="line">    &quot;actions&quot; : [</span><br><span class="line">        &#123; &quot;remove&quot; : &#123; &quot;index&quot; : &quot;test1&quot;, &quot;alias&quot; : &quot;alias1&quot; &#125; &#125;,</span><br><span class="line">        &#123; &quot;add&quot; : &#123; &quot;index&quot; : &quot;test2&quot;, &quot;alias&quot; : &quot;alias1&quot; &#125; &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br><span class="line">#别名多指，多次指向</span><br><span class="line">POST &#x2F;_aliases</span><br><span class="line">&#123;</span><br><span class="line">    &quot;actions&quot; : [</span><br><span class="line">        &#123; &quot;add&quot; : &#123; &quot;index&quot; : &quot;test1&quot;, &quot;alias&quot; : &quot;alias1&quot; &#125; &#125;,</span><br><span class="line">        &#123; &quot;add&quot; : &#123; &quot;index&quot; : &quot;test2&quot;, &quot;alias&quot; : &quot;alias1&quot; &#125; &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br><span class="line">#别名多指，数组方式</span><br><span class="line">POST &#x2F;_aliases</span><br><span class="line">&#123;</span><br><span class="line">    &quot;actions&quot; : [</span><br><span class="line">        &#123; &quot;add&quot; : &#123; &quot;indices&quot; : [&quot;test1&quot;, &quot;test2&quot;], &quot;alias&quot; : &quot;alias1&quot; &#125; &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br><span class="line">#别名多指，通配符</span><br><span class="line">POST &#x2F;_aliases</span><br><span class="line">&#123;</span><br><span class="line">    &quot;actions&quot; : [</span><br><span class="line">        &#123; &quot;add&quot; : &#123; &quot;index&quot; : &quot;test*&quot;, &quot;alias&quot; : &quot;all_test_indices&quot; &#125; &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br><span class="line">#别名过滤，部分符合条件的可以被别名查出来</span><br><span class="line">POST &#x2F;_aliases</span><br><span class="line">&#123;</span><br><span class="line">    &quot;actions&quot; : [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;add&quot; : &#123;</span><br><span class="line">                 &quot;index&quot; : &quot;test1&quot;,</span><br><span class="line">                 &quot;alias&quot; : &quot;alias2&quot;,</span><br><span class="line">                 &quot;filter&quot; : &#123; &quot;term&quot; : &#123; &quot;user&quot; : &quot;kimchy&quot; &#125; &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-创建索引的时候关联别名"><a href="#3-创建索引的时候关联别名" class="headerlink" title="3. 创建索引的时候关联别名"></a>3. 创建索引的时候关联别名</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">PUT &#x2F;logs_20162801</span><br><span class="line">&#123;</span><br><span class="line">    &quot;mappings&quot; : &#123;</span><br><span class="line">        &quot;_doc&quot; : &#123;</span><br><span class="line">            &quot;properties&quot; : &#123;</span><br><span class="line">                &quot;year&quot; : &#123;&quot;type&quot; : &quot;integer&quot;&#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;aliases&quot; : &#123;</span><br><span class="line">        &quot;current_day&quot; : &#123;&#125;,</span><br><span class="line">        &quot;2016&quot; : &#123;</span><br><span class="line">            &quot;filter&quot; : &#123;</span><br><span class="line">                &quot;term&quot; : &#123;&quot;year&quot; : 2016 &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="删除别名"><a href="#删除别名" class="headerlink" title="删除别名"></a>删除别名</h2><h3 id="1-删除索引的别名"><a href="#1-删除索引的别名" class="headerlink" title="1. 删除索引的别名"></a>1. 删除索引的别名</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#123;index&#125;&#x2F;_alias&#x2F;&#123;name&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>index：* | _all | glob pattern | name1, name2, …</p>
+</li>
+<li><p>name： * | _all | glob pattern | name1, name2, …</p>
+<h2 id="查询别名"><a href="#查询别名" class="headerlink" title="查询别名"></a>查询别名</h2></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET &#x2F;logs_20162801&#x2F;_alias&#x2F;*</span><br></pre></td></tr></table></figure>
+<h2 id="写索引"><a href="#写索引" class="headerlink" title="写索引"></a>写索引</h2><p>一个别名只能有一个写索引，向别名写入的时候就会写入这个索引。当别名指向多个写索引，则写入操作被拒绝。</p>
+<h3 id="1-创建别名的时候指定写索引，只能在只有一个索引的时候。"><a href="#1-创建别名的时候指定写索引，只能在只有一个索引的时候。" class="headerlink" title="1. 创建别名的时候指定写索引，只能在只有一个索引的时候。"></a>1. 创建别名的时候指定写索引，只能在只有一个索引的时候。</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">POST &#x2F;_aliases</span><br><span class="line">&#123;</span><br><span class="line">    &quot;actions&quot; : [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;add&quot; : &#123;</span><br><span class="line">                 &quot;index&quot; : &quot;test&quot;,</span><br><span class="line">                 &quot;alias&quot; : &quot;alias1&quot;,</span><br><span class="line">                 &quot;is_write_index&quot; : true</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-创建索引的时候指定写索引"><a href="#3-创建索引的时候指定写索引" class="headerlink" title="3. 创建索引的时候指定写索引"></a>3. 创建索引的时候指定写索引</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">PUT my_logs_index-000001</span><br><span class="line">&#123;</span><br><span class="line">  &quot;aliases&quot;: &#123;</span><br><span class="line">    &quot;logs&quot;: &#123; &quot;is_write_index&quot;: true &#125; </span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-更改写索引"><a href="#2-更改写索引" class="headerlink" title="2. 更改写索引"></a>2. 更改写索引</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">POST &#x2F;_aliases</span><br><span class="line">&#123;</span><br><span class="line">    &quot;actions&quot; : [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;add&quot; : &#123;</span><br><span class="line">                 &quot;index&quot; : &quot;test&quot;,</span><br><span class="line">                 &quot;alias&quot; : &quot;alias1&quot;,</span><br><span class="line">                 &quot;is_write_index&quot; : true</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, &#123;</span><br><span class="line">            &quot;add&quot; : &#123;</span><br><span class="line">                 &quot;index&quot; : &quot;test2&quot;,</span><br><span class="line">                 &quot;alias&quot; : &quot;alias1&quot;,</span><br><span class="line">                 &quot;is_write_index&quot; : false</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%8AElasticSearch%E3%80%8B/" rel="tag">《ElasticSearch》</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+   
+</article>
+
+    
+    <article
+  id="post-ES4：映射Mapping管理"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/11/27/ES4%EF%BC%9A%E6%98%A0%E5%B0%84Mapping%E7%AE%A1%E7%90%86/"
+    >Mapping管理</a> 
+</h2>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2020/11/27/ES4%EF%BC%9A%E6%98%A0%E5%B0%84Mapping%E7%AE%A1%E7%90%86/" class="article-date">
+  <time datetime="2020-11-27T07:28:34.933Z" itemprop="datePublished">2020-11-27</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/ElasticSearch/">ElasticSearch</a>
+  </div>
+   
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="ES4：映射Mapping管理"><a href="#ES4：映射Mapping管理" class="headerlink" title="ES4：映射Mapping管理"></a>ES4：映射Mapping管理</h1><h3 id="添加字段"><a href="#添加字段" class="headerlink" title="添加字段"></a>添加字段</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">PUT &#x2F;twitter-1,twitter-2&#x2F;_mapping&#x2F;_doc </span><br><span class="line">&#123;</span><br><span class="line">  &quot;properties&quot;: &#123;</span><br><span class="line">    &quot;user_name&quot;: &#123;</span><br><span class="line">      &quot;type&quot;: &quot;text&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>（1）可以添加新字段<br>（2）可以为多个索引同时添加字段，并且可以使用通配符</p>
+<h3 id="更新属性"><a href="#更新属性" class="headerlink" title="更新属性"></a>更新属性</h3><p>默认Mapping里的各项属性是不能修改的，以下是特例：</p>
+<ul>
+<li>Object类型可以增加新字段</li>
+<li>多类型字段，可以扩充新类型</li>
+<li><code>ignore_above</code>参数的值可以被改变</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">PUT my_index&#x2F;_mapping&#x2F;_doc</span><br><span class="line">&#123;</span><br><span class="line">  &quot;properties&quot;: &#123;</span><br><span class="line">    &quot;name&quot;: &#123;</span><br><span class="line">      &quot;properties&quot;: &#123;</span><br><span class="line">        &quot;last&quot;: &#123; </span><br><span class="line">          &quot;type&quot;: &quot;text&quot;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;user_id&quot;: &#123;</span><br><span class="line">      &quot;type&quot;: &quot;keyword&quot;,</span><br><span class="line">      &quot;ignore_above&quot;: 100 </span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="查询映射"><a href="#查询映射" class="headerlink" title="查询映射"></a>查询映射</h3><p>获取映射的设置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GET &#x2F;_mapping&#x2F;_doc</span><br><span class="line">GET &#x2F;_all&#x2F;_mapping&#x2F;_doc</span><br></pre></td></tr></table></figure>
+<p>获取所有索引的字段映射</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GET &#x2F;_all&#x2F;_mapping</span><br><span class="line">GET &#x2F;_mapping</span><br></pre></td></tr></table></figure>
+<p>以字段挑选部分映射</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">GET &#x2F;twitter,kimchy&#x2F;_mapping&#x2F;field&#x2F;message</span><br><span class="line"></span><br><span class="line">GET &#x2F;_all&#x2F;_mapping&#x2F;_doc&#x2F;field&#x2F;message,user.id</span><br><span class="line"></span><br><span class="line">GET &#x2F;_all&#x2F;_mapping&#x2F;_doc&#x2F;field&#x2F;*.id</span><br></pre></td></tr></table></figure>
+
+
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%8AElasticSearch%E3%80%8B/" rel="tag">《ElasticSearch》</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+   
+</article>
+
+    
+    <article
+  id="post-MarkDown使用技巧"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+     
+    <div class="article-meta">
+      <a href="/2020/11/27/MarkDown%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/" class="article-date">
+  <time datetime="2020-11-27T06:17:29.515Z" itemprop="datePublished">2020-11-27</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="MarkDown使用技巧"><a href="#MarkDown使用技巧" class="headerlink" title="MarkDown使用技巧"></a>MarkDown使用技巧</h1><p>Es的官方文档，直接选中复制的时候，会复制其MarkDown文本。粘贴出来直接是MarkDown。</p>
+<p>粘贴在Yu Writer里面，表格会失效。可以先粘贴在Typora里面，然后就可以复制为MarkDown。不能使用“复制表格”，那个只能在Typora里粘贴。</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+    
+ 
+   
+</article>
+
+    
+    <article
+  id="post-ES6：空值"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/11/27/ES6%EF%BC%9A%E7%A9%BA%E5%80%BC/"
+    >空值</a> 
+</h2>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2020/11/27/ES6%EF%BC%9A%E7%A9%BA%E5%80%BC/" class="article-date">
+  <time datetime="2020-11-27T02:51:13.663Z" itemprop="datePublished">2020-11-27</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/ElasticSearch/">ElasticSearch</a>
+  </div>
+   
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="空值"><a href="#空值" class="headerlink" title="空值"></a>空值</h1><h3 id="1-空值类型"><a href="#1-空值类型" class="headerlink" title="1.空值类型"></a>1.空值类型</h3><p>普通字段：null<br>数组：[]<br>         [null]</p>
+<h3 id="2-默认行为"><a href="#2-默认行为" class="headerlink" title="2.默认行为"></a>2.默认行为</h3><p>空值不能被索引、搜索。</p>
+<h3 id="3-空值替代"><a href="#3-空值替代" class="headerlink" title="3.空值替代"></a>3.空值替代</h3><p>字段定义时，null_value属性被用来定义当字段为空值时，替换成的值。<br>值必须与本字段的定义的类型相兼容。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">PUT my_index</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;_doc&quot;: &#123;</span><br><span class="line">      &quot;properties&quot;: &#123;</span><br><span class="line">        &quot;status_code&quot;: &#123;</span><br><span class="line">          &quot;type&quot;:       &quot;keyword&quot;,</span><br><span class="line">          &quot;null_value&quot;: &quot;NULL&quot; </span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%8AElasticSearch%E3%80%8B/" rel="tag">《ElasticSearch》</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+   
+</article>
+
+    
+    <article
+  id="post-ES7日期和时间"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+     
+    <div class="article-meta">
+      <a href="/2020/11/27/ES7%E6%97%A5%E6%9C%9F%E5%92%8C%E6%97%B6%E9%97%B4/" class="article-date">
+  <time datetime="2020-11-27T01:51:56.312Z" itemprop="datePublished">2020-11-27</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="日期和时间"><a href="#日期和时间" class="headerlink" title="日期和时间"></a>日期和时间</h1> 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+    
+ 
+   
+</article>
+
+    
+    <article
+  id="post-ES8：文档Doc创建"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/11/26/ES8%EF%BC%9A%E6%96%87%E6%A1%A3Doc%E5%88%9B%E5%BB%BA/"
+    >文档Doc创建</a> 
+</h2>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2020/11/26/ES8%EF%BC%9A%E6%96%87%E6%A1%A3Doc%E5%88%9B%E5%BB%BA/" class="article-date">
+  <time datetime="2020-11-26T10:06:20.114Z" itemprop="datePublished">2020-11-26</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/ElasticSearch/">ElasticSearch</a>
+  </div>
+   
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="文档Doc创建"><a href="#文档Doc创建" class="headerlink" title="文档Doc创建"></a>文档Doc创建</h1><h3 id="一、索引文档"><a href="#一、索引文档" class="headerlink" title="一、索引文档"></a>一、索引文档</h3><h4 id="1-指定ID索引文档"><a href="#1-指定ID索引文档" class="headerlink" title="1. 指定ID索引文档"></a>1. 指定ID索引文档</h4><p>index api 能够插入或者更新一个文档。如果索引不存在，将会自动创建此索引，并应用匹配的索引模板。详见ES1索引Index创建。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">PUT twitter&#x2F;_doc&#x2F;1</span><br><span class="line">&#123;</span><br><span class="line">    &quot;user&quot; : &quot;kimchy&quot;,</span><br><span class="line">    &quot;post_date&quot; : &quot;2009-11-15T14:12:12&quot;,</span><br><span class="line">    &quot;message&quot; : &quot;trying out Elasticsearch&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里的更新，并不是增量更新字段，而是数据全覆盖，版本发生改变。</p>
+<h4 id="2-版本Version"><a href="#2-版本Version" class="headerlink" title="2.版本Version"></a>2.版本Version</h4><p>索引文档的时候，会返回一个版本字段。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;_index&quot;: &quot;ck_test&quot;,</span><br><span class="line">  &quot;_type&quot;: &quot;_doc&quot;,</span><br><span class="line">  &quot;_id&quot;: &quot;1&quot;,</span><br><span class="line">  &quot;_version&quot;: 4,</span><br><span class="line">  &quot;result&quot;: &quot;updated&quot;,</span><br><span class="line">  &quot;_shards&quot;: &#123;</span><br><span class="line">    &quot;total&quot;: 2,</span><br><span class="line">    &quot;successful&quot;: 1,</span><br><span class="line">    &quot;failed&quot;: 0</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;_seq_no&quot;: 3,</span><br><span class="line">  &quot;_primary_term&quot;: 1</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>索引文档的时候，可以带上version字段。并遵循version_type规则:</p>
+<ul>
+<li>internal （默认。1 - 无穷）：提供的version和已存在的version必须一致</li>
+<li>external / external_gt : 提供的version必须大于已存在的，或者不存在已有的version</li>
+<li>external_gte :提供的version必须大于等于已存在的version，不建议使用</li>
+</ul>
+<h4 id="3-操作类型"><a href="#3-操作类型" class="headerlink" title="3.操作类型"></a>3.操作类型</h4><p>默认情况下，存在的id会被视为更新，可以通过op_type参数来设置为仅创建（put-if-absent）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">PUT twitter&#x2F;_doc&#x2F;1?op_type&#x3D;create</span><br><span class="line">&#123;</span><br><span class="line">    &quot;user&quot; : &quot;kimchy&quot;,</span><br><span class="line">    &quot;post_date&quot; : &quot;2009-11-15T14:12:12&quot;,</span><br><span class="line">    &quot;message&quot; : &quot;trying out Elasticsearch&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="4-不指定ID索引文档"><a href="#4-不指定ID索引文档" class="headerlink" title="4.不指定ID索引文档"></a>4.不指定ID索引文档</h4><p>op_type自动被设置为create</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">POST twitter&#x2F;_doc&#x2F;</span><br><span class="line">&#123;</span><br><span class="line">    &quot;user&quot; : &quot;kimchy&quot;,</span><br><span class="line">    &quot;post_date&quot; : &quot;2009-11-15T14:12:12&quot;,</span><br><span class="line">    &quot;message&quot; : &quot;trying out Elasticsearch&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%8AElasticSearch%E3%80%8B/" rel="tag">《ElasticSearch》</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+   
+</article>
+
+    
+    <article
+  id="post-ES5：字段Field"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/11/26/ES5%EF%BC%9A%E5%AD%97%E6%AE%B5Field/"
+    >字段Field</a> 
+</h2>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2020/11/26/ES5%EF%BC%9A%E5%AD%97%E6%AE%B5Field/" class="article-date">
+  <time datetime="2020-11-26T07:59:39.550Z" itemprop="datePublished">2020-11-26</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/ElasticSearch/">ElasticSearch</a>
+  </div>
+   
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="字段Field"><a href="#字段Field" class="headerlink" title="字段Field"></a>字段Field</h1><h2 id="String字符串类型"><a href="#String字符串类型" class="headerlink" title="String字符串类型"></a>String字符串类型</h2><h3 id="1-text"><a href="#1-text" class="headerlink" title="1.text"></a>1.text</h3><p>会被分词，不能被聚集、排序。</p>
+<h3 id="2-keyword"><a href="#2-keyword" class="headerlink" title="2. keyword"></a>2. keyword</h3><p>只能通过全词匹配搜索，不能通过模糊匹配搜索。</p>
+<h2 id="数字类型"><a href="#数字类型" class="headerlink" title="数字类型"></a>数字类型</h2><h3 id="3-整型-（byte-short-integer，long"><a href="#3-整型-（byte-short-integer，long" class="headerlink" title="3. 整型 （byte, short, integer，long)"></a>3. 整型 （<code>byte</code>, <code>short</code>, <code>integer</code>，<code>long</code>)</h3><p>（1）尽量选择符合要求的更小数字类型。能加快索引和搜索的速度。<br>（2）无论选择哪种类型，储存所费的空间都只和实际值有关。</p>
+<h3 id="4-浮点型（scaled-float-double-float，half-float）"><a href="#4-浮点型（scaled-float-double-float，half-float）" class="headerlink" title="4. 浮点型（scaled_float,double, float，half_float）"></a>4. 浮点型（<code>scaled_float</code>,<code>double</code>, <code>float</code>，<code>half_float</code>）</h3><p>（1）把浮点型通过倍数扩充，变成整型存储，会节约存储空间。因为整型容易压缩。而实现这一目的可以用scaled_float类型。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fractions ：乘以的倍数，得出乘积以后，小数部分被舍弃。</span><br><span class="line">2.34 * 10  &#x3D; 23（保存） &#x3D; 2.3(使用)</span><br></pre></td></tr></table></figure>
+
+<p>（2）当scaled_float无法满足，如小数位过多的时候。应尽量选择符合要求的更小数字类型。<br>| Type | Minimum value | Maximum value | Significant bits / digits |<br>| :– | :– | :– | :– |<br>| <code>double</code> |<code>2-1074</code>|<code>(2-2-52)·21023</code>|<code>53</code> / <code>15.95</code>|<br>|     |     |     |     |<br>| <code>float</code> | <code>2-149</code> | <code>(2-2-23)·2127</code> | <code>24</code> / <code>7.22</code> |<br>|     |     |     |     |<br>| <code>half_float</code> | <code>2-24</code> | <code>65504</code> | <code>11</code> / <code>3.31</code> |</p>
+<h2 id="日期类型"><a href="#日期类型" class="headerlink" title="日期类型"></a>日期类型</h2><h3 id="5-date"><a href="#5-date" class="headerlink" title="5. date"></a>5. date</h3><p>（1）内部存储为毫秒，date类型的查询，都会转换为range查询。<br>（2）定义的时候，日期可以指定格式，第一种格式会被用作查询返回值的格式化。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">PUT my_index</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;_doc&quot;: &#123;</span><br><span class="line">      &quot;properties&quot;: &#123;</span><br><span class="line">        &quot;date&quot;: &#123;</span><br><span class="line">          &quot;type&quot;:   &quot;date&quot;,</span><br><span class="line">          &quot;format&quot;: &quot;yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis&quot;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="布尔类型"><a href="#布尔类型" class="headerlink" title="布尔类型"></a>布尔类型</h2><h3 id="6-boolean"><a href="#6-boolean" class="headerlink" title="6. boolean"></a>6. boolean</h3><p>（1）往boolean上赋值时，既可以赋值true，false，也可以赋值“true”，“false”<br>（2）聚集函数如terms aggregation,把1 和 0 当做key，把字符串“true”和“false”当做key_as_string。<br>（3）当作为脚本返回值时，boolean类型返回 1 或者 0。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"># 文档</span><br><span class="line">&#123;</span><br><span class="line">  &quot;user&quot;: true,</span><br><span class="line">  &quot;man&quot;: &quot;true&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#查询</span><br><span class="line">GET ck_test&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;aggs&quot;: &#123;</span><br><span class="line">    &quot;user&quot;: &#123;</span><br><span class="line">      &quot;terms&quot;: &#123;</span><br><span class="line">        &quot;field&quot;: &quot;user&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;script_fields&quot;: &#123;</span><br><span class="line">    &quot;user&quot;: &#123;</span><br><span class="line">      &quot;script&quot;: &#123;</span><br><span class="line">        &quot;lang&quot;: &quot;painless&quot;,</span><br><span class="line">        &quot;source&quot;: &quot;doc[&#39;user&#39;].value&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#结果</span><br><span class="line">&#123;</span><br><span class="line">  &quot;hits&quot;: &#123;</span><br><span class="line">    &quot;total&quot;: 1,</span><br><span class="line">    &quot;max_score&quot;: 1,</span><br><span class="line">    &quot;hits&quot;: [</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;_index&quot;: &quot;ck_test&quot;,</span><br><span class="line">        &quot;_type&quot;: &quot;_doc&quot;,</span><br><span class="line">        &quot;_id&quot;: &quot;1&quot;,</span><br><span class="line">        &quot;_score&quot;: 1,</span><br><span class="line">        &quot;fields&quot;: &#123;</span><br><span class="line">          &quot;user&quot;: [</span><br><span class="line">            true</span><br><span class="line">          ]</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;aggregations&quot;: &#123;</span><br><span class="line">    &quot;user&quot;: &#123;</span><br><span class="line">      &quot;doc_count_error_upper_bound&quot;: 0,</span><br><span class="line">      &quot;sum_other_doc_count&quot;: 0,</span><br><span class="line">      &quot;buckets&quot;: [</span><br><span class="line">        &#123;</span><br><span class="line">          &#x2F;*聚集函数如terms aggregation,把1 和 0 当做key*&#x2F;</span><br><span class="line">          &quot;key&quot;: 1, </span><br><span class="line">          &#x2F;*把字符串“true”和“false”当做key_as_string*&#x2F;</span><br><span class="line">          &quot;key_as_string&quot;: &quot;true&quot;          </span><br><span class="line">        &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="二进制类型"><a href="#二进制类型" class="headerlink" title="二进制类型"></a>二进制类型</h2><h3 id="7-binary"><a href="#7-binary" class="headerlink" title="7. binary"></a>7. binary</h3><p>binary类型用于存储base64编码的字符串，不能搜索也不能排序。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">在网络上交换数据时，往往要经过多个路由设备，由于不同的设备对字符的处理方式有一些不同，这样那些不可见字符就有可能被处理错误，所以就先把数据先做一个Base64编码，统统变成可见字符，这样出错的可能性就大降低了。</span><br><span class="line"></span><br><span class="line">任何一个数据无非可以看作一个比特流，如01000100010011101100111010111100011001010......那么我们取6个比特为一组，计算它的ascii值，得到一个字符，这个字符肯定是可见字符，好，把它对应的字符写出来，再取6个比特，计算...，如此下去，直到最后，就完成了编码。</span><br></pre></td></tr></table></figure>
+<h2 id="范围类型"><a href="#范围类型" class="headerlink" title="范围类型"></a>范围类型</h2><h3 id="索引和查询"><a href="#索引和查询" class="headerlink" title="索引和查询"></a>索引和查询</h3><p>（1）范围索引使用上下端来标识</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">PUT range_index&#x2F;_doc&#x2F;1?refresh</span><br><span class="line">&#123;</span><br><span class="line">  &quot;expected_attendees&quot; : &#123; </span><br><span class="line">    &quot;gte&quot; : 10,</span><br><span class="line">    &quot;lte&quot; : 20</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;time_frame&quot; : &#123; </span><br><span class="line">    &quot;gte&quot; : &quot;2015-10-31 12:00:00&quot;, </span><br><span class="line">    &quot;lte&quot; : &quot;2015-11-01&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>（2）范围查询支持一个关系限定：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">GET range_index&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot; : &#123;</span><br><span class="line">    &quot;range&quot; : &#123;</span><br><span class="line">      &quot;time_frame&quot; : &#123; </span><br><span class="line">        &quot;gte&quot; : &quot;2015-10-31&quot;,</span><br><span class="line">        &quot;lte&quot; : &quot;2015-11-01&quot;,</span><br><span class="line">        &quot;relation&quot; : &quot;within&quot; </span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>relation</code> parameter which can be one of <code>WITHIN</code>, <code>CONTAINS</code>, <code>INTERSECTS</code> (default)</p>
+<h3 id="8-整型范围（integer-range-long-range）"><a href="#8-整型范围（integer-range-long-range）" class="headerlink" title="8. 整型范围（integer_range,long_range）"></a>8. 整型范围（<code>integer_range</code>,<code>long_range</code>）</h3><h3 id="9-浮点型范围（float-range-double-range）"><a href="#9-浮点型范围（float-range-double-range）" class="headerlink" title="9. 浮点型范围（float_range,double_range）"></a>9. 浮点型范围（<code>float_range</code>,<code>double_range</code>）</h3><h3 id="10-日期范围（date）"><a href="#10-日期范围（date）" class="headerlink" title="10. 日期范围（date）"></a>10. 日期范围（<code>date</code>）</h3><p>（1）定义字段时，可选参数和<a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/6.5/date.html">date</a>格式一致。<br>（2）索引文档时，文档格式和<a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/6.5/query-dsl-range-query.html#ranges-on-dates" title="Ranges on date fields">date range queries</a>格式一致</p>
+<h3 id="11-IP范围（ip-range）"><a href="#11-IP范围（ip-range）" class="headerlink" title="11. IP范围（ip_range）"></a>11. IP范围（<code>ip_range</code>）</h3><p>IP范围在索引的时候可以用CIDR格式</p>
+<h2 id="复合类型"><a href="#复合类型" class="headerlink" title="复合类型"></a>复合类型</h2><h3 id="12-对象类型-（object）"><a href="#12-对象类型-（object）" class="headerlink" title="12. 对象类型 （object）"></a>12. 对象类型 （<code>object</code>）</h3><p>（1）任意深度嵌套的json在es内部都默认存储为object类型，但无需在映射中指明。<br>（2）任意深度的json在es内部都只会扁平化为普通文档，嵌套字段用<code>.</code>分隔不同深度的键。<br>（2）array的扁平化，是把多个对象的相同属性，扁平为一个多值列表。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">PUT my_index&#x2F;_doc&#x2F;1</span><br><span class="line">&#123;</span><br><span class="line">  &quot;group&quot; : &quot;fans&quot;,</span><br><span class="line">  &quot;user&quot; : [ </span><br><span class="line">    &#123;</span><br><span class="line">      &quot;first&quot; : &quot;John&quot;,</span><br><span class="line">      &quot;last&quot; :  &quot;Smith&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;first&quot; : &quot;Alice&quot;,</span><br><span class="line">      &quot;last&quot; :  &quot;White&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br><span class="line"># 被ES扁平化之后</span><br><span class="line">&#123;</span><br><span class="line">  &quot;group&quot; :        &quot;fans&quot;,</span><br><span class="line">  &quot;user.first&quot; : [ &quot;alice&quot;, &quot;john&quot; ],</span><br><span class="line">  &quot;user.last&quot; :  [ &quot;smith&quot;, &quot;white&quot; ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="13-嵌套类型-（nested）"><a href="#13-嵌套类型-（nested）" class="headerlink" title="13. 嵌套类型 （nested）"></a>13. 嵌套类型 （<code>nested</code>）</h3><p>（1）nested是object的特殊化版本，允许保存json array。并且在查询时，array内的值互相独立，每个值都会单独存储为一个隐藏文档。<br>（2）嵌套文档可以被</p>
+<ul>
+<li> 使用 <code>Nested Query</code>查询</li>
+<li> 使用<code>Nested· Aggregation</code>和<code>reverse_nested</code> 聚集函数分析</li>
+<li> 使用 <code>nested sorting</code>排序</li>
+<li> 使用 <code>nested inner hits</code>检索和高亮<br>（3）嵌套文档的限制<br>有100个嵌套字段的文档，实际上会被存储为101个文档。为了防止映射激增，默认的每个索引的嵌套字段个数已经被限制为50个。</li>
+</ul>
+<h3 id="14-array类型，一个字段多个值"><a href="#14-array类型，一个字段多个值" class="headerlink" title="14. array类型，一个字段多个值"></a>14. array类型，一个字段多个值</h3><p>（1）es并没有显示地提供array类型，但是每种字段类型都可以存储多个值，并且会被自动转换为array格式。<br>（2）特征</p>
+<ul>
+<li>将一组值索引到一个尚未存在的字段时，es根据第一个值确定字段的类型，然后将剩余值强转为第一个值的类型，无法强转会报错。</li>
+<li>空数组[]会被视为此字段没有值。<br><code>An empty array [] is treated as a missing field — a field with no values.</code></li>
+<li>数组可以包含 <code>null</code>,要么会被跳过，要么会被配置的值取代。</li>
+</ul>
+<h3 id="15-field属性，一个字段多个索引"><a href="#15-field属性，一个字段多个索引" class="headerlink" title="15.field属性，一个字段多个索引"></a>15.field属性，一个字段多个索引</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">PUT my_index</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;_doc&quot;: &#123;</span><br><span class="line">      &quot;properties&quot;: &#123;</span><br><span class="line">        &quot;text&quot;: &#123; </span><br><span class="line">          &quot;type&quot;: &quot;text&quot;,</span><br><span class="line">          &quot;fields&quot;: &#123;</span><br><span class="line">            &quot;english&quot;: &#123; </span><br><span class="line">              &quot;type&quot;:     &quot;text&quot;,</span><br><span class="line">              &quot;analyzer&quot;: &quot;english&quot;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="功能性类型"><a href="#功能性类型" class="headerlink" title="功能性类型"></a>功能性类型</h2><h3 id="16-ip"><a href="#16-ip" class="headerlink" title="16. ip"></a>16. ip</h3><p>ip类型用于存储ip地址</p>
+<h3 id="17-completion"><a href="#17-completion" class="headerlink" title="17. completion"></a>17. completion</h3><p>用于自动完成功能</p>
+<h3 id="18-token-count"><a href="#18-token-count" class="headerlink" title="18. token_count"></a>18. token_count</h3><p>接收String，使用分词器分词，计算分出的词汇数量。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">PUT my_index</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;_doc&quot;: &#123;</span><br><span class="line">      &quot;properties&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &#123; </span><br><span class="line">          &quot;type&quot;: &quot;text&quot;,</span><br><span class="line">          &quot;fields&quot;: &#123;</span><br><span class="line">            &quot;length&quot;: &#123; </span><br><span class="line">              &quot;type&quot;:     &quot;token_count&quot;,</span><br><span class="line">              &quot;analyzer&quot;: &quot;standard&quot;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="19-percolator（渗滤器）"><a href="#19-percolator（渗滤器）" class="headerlink" title="19. percolator（渗滤器）"></a>19. percolator（渗滤器）</h3><p>在查询的时候，提供文档，然后会搜索出匹配文档的渗滤条件。</p>
+<p>一般的查询，是提供查询条件，查出符合条件的文档。文档内容存储在字段值里，查询语句写在查询条件里。<br>渗滤器恰恰相反，它存储的字段值是查询语句，查询条件是文档内容。</p>
+<p>它的作用是查询文档所符合的渗滤条件。</p>
+<p>主要可以用于内容分类。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"># 定义一个渗滤器,功能是给文档分类</span><br><span class="line">PUT index</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;_doc&quot; : &#123;</span><br><span class="line">      &quot;properties&quot;: &#123;</span><br><span class="line">        &quot;query&quot; : &#123;</span><br><span class="line">          &quot;type&quot; : &quot;percolator&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;doc_type&quot; : &#123;</span><br><span class="line">          &quot;type&quot;: &quot;text&quot;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"># 定义其中一种分类，如果文档的body字段含有“人”字，则文档分类为human</span><br><span class="line">PUT queries&#x2F;_doc&#x2F;1?refresh</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot; : &#123;</span><br><span class="line">    &quot;match&quot; : &#123;</span><br><span class="line">      &quot;body&quot; : &quot;人&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;doc_type&quot;  :  &quot;human&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="20-alias"><a href="#20-alias" class="headerlink" title="20. alias"></a>20. alias</h3><p>（1）字段可以设置为别名类型，用于指向同文档的另一个字段。被指向的字段必须用全路径标识。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">PUT trips</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;_doc&quot;: &#123;</span><br><span class="line">      &quot;properties&quot;: &#123;</span><br><span class="line">        &quot;distance&quot;: &#123;</span><br><span class="line">          &quot;type&quot;: &quot;long&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;route_length_miles&quot;: &#123;</span><br><span class="line">          &quot;type&quot;: &quot;alias&quot;,</span><br><span class="line">          &quot;path&quot;: &quot;distance&quot; </span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>（2）别名目标<br>别名目标有一定的限制。</p>
+<ul>
+<li>必须是具体类型，不能是object类型也不能是其他别名。</li>
+<li>别名创建时，目标字段必须存在</li>
+<li>如果指向nested类型，别名必须有和目标一样的嵌套范围。</li>
+<li>别名只能搜索不能写入。</li>
+</ul>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%8AElasticSearch%E3%80%8B/" rel="tag">《ElasticSearch》</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+   
+</article>
+
+    
+  </article>
+  
+
+  
+  <nav class="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/">上一页</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/">下一页</a>
+  </nav>
+  
+</section>
+</div>
+
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2016-2020
+        <i class="ri-heart-fill heart_icon"></i> Grinner C.K.
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        Powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+        <span class="division">|</span>
+        Theme - <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>Visitors:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>Views:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="书"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags/%E3%80%8A%E5%8A%BF%E7%95%8C%E3%80%8B/">势界</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+    
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+
+
+<html lang="zh">
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+     
+  </title>
+  <meta name="generator" content="hexo-theme-ayer">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  
+<script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      
+<section class="cover">
+    
+  <div class="cover-frame">
+    <div class="bg-box">
+      <img src="/images/cover1.jpg" alt="image frame" />
+    </div>
+    <div class="cover-inner text-center text-white">
+      <h1><a href="/">书</a></h1>
+      <div id="subtitle-box">
+        
+        <span id="subtitle"></span>
+        
+      </div>
+      <div>
+        
+      </div>
+    </div>
+  </div>
+  <div class="cover-learn-more">
+    <a href="javascript:void(0)" class="anchor"><i class="ri-arrow-down-line"></i></a>
+  </div>
+</section>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js"></script>
+
+
+<!-- Subtitle -->
+
+  <script>
+    try {
+      var typed = new Typed("#subtitle", {
+        strings: ['常思天下梦，闲翻治世书', '不平真意在，难凉热血无', '才资出我类，余生有谁读'],
+        startDelay: 0,
+        typeSpeed: 200,
+        loop: true,
+        backSpeed: 100,
+        showCursor: true
+      });
+    } catch (err) {
+      console.log(err)
+    }
+  </script>
+  
+<div id="main">
+  <section class="outer">
+  
+  
+<div class="notice" style="margin-top:50px">
+    <i class="ri-heart-fill"></i>
+    <div class="notice-content">有所欲，有所为，有所感，有所思，有所得。得而志之，是谓之书。书人之生，是谓书生。</div>
+</div>
+
+
+<style>
+    .notice {
+        padding: 20px;
+        border: 1px dashed #e6e6e6;
+        color: #969696;
+        position: relative;
+        display: inline-block;
+        width: 100%;
+        background: #fbfbfb50;
+        border-radius: 10px;
+    }
+
+    .notice i {
+        float: left;
+        color: #999;
+        font-size: 16px;
+        padding-right: 10px;
+        vertical-align: middle;
+        margin-top: -2px;
+    }
+
+    .notice-content {
+        display: initial;
+        vertical-align: middle;
+    }
+</style>
+  
+  <article class="articles">
+    
+    
+    
+    
+    <article
+  id="post-ES4：映射Mapping创建"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/11/26/ES4%EF%BC%9A%E6%98%A0%E5%B0%84Mapping%E5%88%9B%E5%BB%BA/"
+    >Mapping创建</a> 
+</h2>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2020/11/26/ES4%EF%BC%9A%E6%98%A0%E5%B0%84Mapping%E5%88%9B%E5%BB%BA/" class="article-date">
+  <time datetime="2020-11-26T06:27:28.523Z" itemprop="datePublished">2020-11-26</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/ElasticSearch/">ElasticSearch</a>
+  </div>
+   
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="Mapping创建"><a href="#Mapping创建" class="headerlink" title="Mapping创建"></a>Mapping创建</h1><h3 id="Type解决方案"><a href="#Type解决方案" class="headerlink" title="Type解决方案"></a>Type解决方案</h3><ul>
+<li>使用自定义的一个type字段，取代_type字段</li>
+</ul>
+<h3 id="字段映射属性"><a href="#字段映射属性" class="headerlink" title="字段映射属性"></a>字段映射属性</h3><p>映射属性，指创建索引时，mappings._doc下面的直接属性。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">PUT my_index</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;_doc&quot;: &#123;</span><br><span class="line">      &quot;dynamic&quot;: false</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>1.<code>dynamic</code><br>       true ：开启自动映射，未知字段自动附加到Mapping<br>       false : 关闭自动映射，未知字段被忽略，不能被搜索，但是在source里会包含。<br>       strict : 禁止添加新字段，未知字段将被拒绝并返回异常。</p>
+<h3 id="动态映射"><a href="#动态映射" class="headerlink" title="动态映射"></a>动态映射</h3><table>
+<thead>
+<tr>
+<th><strong>JSON datatype</strong></th>
+<th><strong>Elasticsearch datatype</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>null</code></td>
+<td>不添加字段</td>
+</tr>
+<tr>
+<td><code>true</code></td>
+<td><code>boolean</code></td>
+</tr>
+<tr>
+<td>浮点数</td>
+<td><code>float</code></td>
+</tr>
+<tr>
+<td>integer</td>
+<td><code>long</code></td>
+</tr>
+<tr>
+<td>object</td>
+<td><code>object</code></td>
+</tr>
+<tr>
+<td>array</td>
+<td>取决于数组内第一个非空值</td>
+</tr>
+<tr>
+<td>string[<code>date</code>]</td>
+<td><code>date</code></td>
+</tr>
+<tr>
+<td>string[<code>numeric</code>]</td>
+<td><code>double</code></td>
+</tr>
+<tr>
+<td>string[<code>numeric</code>]</td>
+<td><code>long</code></td>
+</tr>
+<tr>
+<td>string</td>
+<td><code>text</code> + <code>keyword</code></td>
+</tr>
+</tbody></table>
+<h4 id="1-日期配置"><a href="#1-日期配置" class="headerlink" title="1. 日期配置"></a>1. 日期配置</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">PUT my_index</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;_doc&quot;: &#123;</span><br><span class="line">      &#x2F;*默认是true*&#x2F;</span><br><span class="line">      &quot;date_detection&quot;: false,</span><br><span class="line">      &#x2F;*默认是yyyy&#x2F;MM&#x2F;dd HH:mm:ss Z||yyyy&#x2F;MM&#x2F;dd Z*&#x2F;</span><br><span class="line">      &quot;dynamic_date_formats&quot;:  [&quot;MM&#x2F;dd&#x2F;yyyy&quot;]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="2-数字配置"><a href="#2-数字配置" class="headerlink" title="2.数字配置"></a>2.数字配置</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">PUT my_index</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;_doc&quot;: &#123;</span><br><span class="line">      &#x2F;*默认是false*&#x2F;</span><br><span class="line">      &quot;numeric_detection&quot;: true</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="动态模板"><a href="#动态模板" class="headerlink" title="动态模板"></a>动态模板</h3><p>动态映射模板用于自定义一些特殊转换。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"># 将名称以long_开头的，不是以_text结尾的所有string类型的原值，映射为long值</span><br><span class="line">PUT my_index</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;_doc&quot;: &#123;</span><br><span class="line">      &quot;dynamic_templates&quot;: [</span><br><span class="line">        &#123;</span><br><span class="line">          &quot;longs_as_strings&quot;: &#123;</span><br><span class="line">            &quot;match_mapping_type&quot;: &quot;string&quot;,</span><br><span class="line">            &quot;match&quot;:   &quot;long_*&quot;,</span><br><span class="line">            &quot;unmatch&quot;: &quot;*_text&quot;,</span><br><span class="line">            &quot;mapping&quot;: &#123;</span><br><span class="line">              &quot;type&quot;: &quot;long&quot;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#使用两个占位符获取上下文变量</span><br><span class="line">&#123;name&#125;：字段名称</span><br><span class="line">&#123;dynamic_type&#125;：推断的类型</span><br><span class="line"></span><br><span class="line">PUT my_index</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;_doc&quot;: &#123;</span><br><span class="line">      &quot;dynamic_templates&quot;: [</span><br><span class="line">        &#123;</span><br><span class="line">          &quot;named_analyzers&quot;: &#123;</span><br><span class="line">            &quot;match_mapping_type&quot;: &quot;string&quot;,</span><br><span class="line">            &quot;match&quot;: &quot;*&quot;,</span><br><span class="line">            &quot;mapping&quot;: &#123;</span><br><span class="line">              &quot;type&quot;: &quot;text&quot;,</span><br><span class="line">              &quot;analyzer&quot;: &quot;&#123;name&#125;&quot;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          &quot;no_doc_values&quot;: &#123;</span><br><span class="line">            &quot;match_mapping_type&quot;:&quot;*&quot;,</span><br><span class="line">            &quot;mapping&quot;: &#123;</span><br><span class="line">              &quot;type&quot;: &quot;&#123;dynamic_type&#125;&quot;,</span><br><span class="line">              &quot;doc_values&quot;: false</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%8AElasticSearch%E3%80%8B/" rel="tag">《ElasticSearch》</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+   
+</article>
+
+    
+    <article
+  id="post-ES0：疑问"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+     
+    <div class="article-meta">
+      <a href="/2020/11/26/ES0%EF%BC%9A%E7%96%91%E9%97%AE/" class="article-date">
+  <time datetime="2020-11-26T05:51:54.587Z" itemprop="datePublished">2020-11-26</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="Es疑问"><a href="#Es疑问" class="headerlink" title="Es疑问"></a>Es疑问</h1><p>收缩和拆分索引的目的和意义是什么。</p>
+<p>rollover的目的和意义</p>
+<h3 id="术语"><a href="#术语" class="headerlink" title="术语"></a>术语</h3><p>shard<br>replication：复制<br>window_size</p>
+<h4 id="Request-Body-Search"><a href="#Request-Body-Search" class="headerlink" title="Request Body Search"></a><a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/6.5/search-request-body.html">Request Body Search</a></h4><p> 搜索的功能</p>
+<ul>
+<li>  <a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/6.5/search-request-source-filtering.html">Source filtering</a></li>
+<li>  <a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/6.5/search-request-stored-fields.html">Fields</a></li>
+<li>  <a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/6.5/search-request-script-fields.html">Script Fields</a></li>
+<li>  <a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/6.5/search-request-docvalue-fields.html">Doc value Fields</a></li>
+<li>  <a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/6.5/search-request-highlighting.html">Highlighting</a></li>
+<li>  <a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/6.5/search-request-inner-hits.html">Inner hits</a></li>
+<li>  <a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/6.5/search-request-collapse.html">Field Collapsing</a></li>
+</ul>
+<h4 id="Suggesters"><a href="#Suggesters" class="headerlink" title="Suggesters"></a><a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/6.5/search-suggesters.html">Suggesters</a></h4><p>用于对输入的词条进行建议。</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+    </footer>
+  </div>
+
+    
+ 
+   
+</article>
+
+    
+    <article
+  id="post-ES3：索引Index管理"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/11/26/ES3%EF%BC%9A%E7%B4%A2%E5%BC%95Index%E7%AE%A1%E7%90%86/"
+    >索引管理</a> 
+</h2>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2020/11/26/ES3%EF%BC%9A%E7%B4%A2%E5%BC%95Index%E7%AE%A1%E7%90%86/" class="article-date">
+  <time datetime="2020-11-26T05:21:33.738Z" itemprop="datePublished">2020-11-26</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/ElasticSearch/">ElasticSearch</a>
+  </div>
+   
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="索引管理"><a href="#索引管理" class="headerlink" title="索引管理"></a>索引管理</h1><h3 id="一、删除索引"><a href="#一、删除索引" class="headerlink" title="一、删除索引"></a>一、删除索引</h3><h4 id="1-删除语句"><a href="#1-删除语句" class="headerlink" title="1. 删除语句"></a>1. 删除语句</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># ID</span><br><span class="line">DELETE twitter</span><br><span class="line"></span><br><span class="line"># 多值</span><br><span class="line">DELETE twitter,facebook</span><br><span class="line"></span><br><span class="line"># 全部</span><br><span class="line">DELETE *</span><br><span class="line">DELETE _all</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-批量删除控制"><a href="#2-批量删除控制" class="headerlink" title="2. 批量删除控制"></a>2. 批量删除控制</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">PUT _cluster&#x2F;settings</span><br><span class="line">&#123;</span><br><span class="line">    &quot;persistent&quot;: &#123;</span><br><span class="line">        &quot;action.destructive_requires_name&quot;: &quot;true&quot; </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">true:不允许批量删除，必须制定具体索引名</span><br><span class="line">false：可以通过_all和*批量删除</span><br></pre></td></tr></table></figure>
+<h3 id="二、查看索引信息"><a href="#二、查看索引信息" class="headerlink" title="二、查看索引信息"></a>二、查看索引信息</h3><h4 id="1-查询语句"><a href="#1-查询语句" class="headerlink" title="1. 查询语句"></a>1. 查询语句</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># ID</span><br><span class="line">GET twitter</span><br><span class="line"></span><br><span class="line"># 多值</span><br><span class="line">GET twitter,facebook</span><br><span class="line"></span><br><span class="line"># 全部</span><br><span class="line">GET *</span><br><span class="line">GET _all</span><br></pre></td></tr></table></figure>
+<h3 id="三、索引是否存在"><a href="#三、索引是否存在" class="headerlink" title="三、索引是否存在"></a>三、索引是否存在</h3><p>判断索引或者别名是否存在，无法具体区分出是索引还是别名。</p>
+<h4 id="1-查询语句-1"><a href="#1-查询语句-1" class="headerlink" title="1. 查询语句"></a>1. 查询语句</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HEAD  twitter</span><br></pre></td></tr></table></figure>
+<h4 id="2-响应格式"><a href="#2-响应格式" class="headerlink" title="2. 响应格式"></a>2. 响应格式</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">不存在：</span><br><span class="line">404 - Not Found</span><br><span class="line">存在：</span><br><span class="line">200 - OK</span><br></pre></td></tr></table></figure>
+<h3 id="四、打开关闭索引"><a href="#四、打开关闭索引" class="headerlink" title="四、打开关闭索引"></a>四、打开关闭索引</h3><p>只要索引处于open状态，就会占用内存+磁盘，如果将索引close，只会占用磁盘。</p>
+<h4 id="1-查询语句-2"><a href="#1-查询语句-2" class="headerlink" title="1. 查询语句"></a>1. 查询语句</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 控制一个</span><br><span class="line">POST  &#x2F;my_index&#x2F;_close  </span><br><span class="line">POST  &#x2F;my_index&#x2F;_open</span><br><span class="line"></span><br><span class="line"># 控制全部</span><br><span class="line">POST  &#x2F;_all&#x2F;_open</span><br><span class="line">POST  &#x2F;*&#x2F;_open</span><br><span class="line">依然是action.destructive_requires_name控制开关的，见上文。</span><br></pre></td></tr></table></figure>
+<h4 id="2-功能开关"><a href="#2-功能开关" class="headerlink" title="2. 功能开关"></a>2. 功能开关</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">PUT _cluster&#x2F;settings</span><br><span class="line">&#123;</span><br><span class="line">    &quot;persistent&quot;: &#123;</span><br><span class="line">        &quot;cluster.indices.close.enable&quot;: &quot;true&quot; </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">true:可以使用开关索引功能API</span><br><span class="line">false：禁止使用开关索引功能API</span><br></pre></td></tr></table></figure> 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%8AElasticSearch%E3%80%8B/" rel="tag">《ElasticSearch》</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+   
+</article>
+
+    
+    <article
+  id="post-ES2：索引Index模板管理"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/11/26/ES2%EF%BC%9A%E7%B4%A2%E5%BC%95Index%E6%A8%A1%E6%9D%BF%E7%AE%A1%E7%90%86/"
+    >索引模板</a> 
+</h2>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2020/11/26/ES2%EF%BC%9A%E7%B4%A2%E5%BC%95Index%E6%A8%A1%E6%9D%BF%E7%AE%A1%E7%90%86/" class="article-date">
+  <time datetime="2020-11-26T03:18:28.218Z" itemprop="datePublished">2020-11-26</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/ElasticSearch/">ElasticSearch</a>
+  </div>
+   
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="索引模板"><a href="#索引模板" class="headerlink" title="索引模板"></a>索引模板</h1><h4 id="创建"><a href="#创建" class="headerlink" title="创建"></a>创建</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">PUT _template&#x2F;template_1</span><br><span class="line">&#123;</span><br><span class="line">  &quot;index_patterns&quot;: [&quot;ck_t_*&quot;, &quot;ck_s_*&quot;],</span><br><span class="line">  &quot;settings&quot;: &#123;</span><br><span class="line">    &quot;number_of_shards&quot;: 1</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;_doc&quot;: &#123;</span><br><span class="line">      &quot;properties&quot;: &#123;</span><br><span class="line">        &quot;host_name&quot;: &#123;</span><br><span class="line">          &quot;type&quot;: &quot;keyword&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;created_at&quot;: &#123;</span><br><span class="line">          &quot;type&quot;: &quot;date&quot;,</span><br><span class="line">          &quot;format&quot;: &quot;EEE MMM dd HH:mm:ss Z YYYY&quot;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h4 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">DELETE  &#x2F;_template&#x2F;template_1</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="查询"><a href="#查询" class="headerlink" title="查询"></a>查询</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#ID</span><br><span class="line">GET  &#x2F;_template&#x2F;template_1</span><br><span class="line"></span><br><span class="line">#匹配</span><br><span class="line">GET  &#x2F;_template&#x2F;temp*  </span><br><span class="line"></span><br><span class="line">#多值</span><br><span class="line">GET  &#x2F;_template&#x2F;template_1,template_2</span><br><span class="line"></span><br><span class="line">#列表</span><br><span class="line">GET  &#x2F;_template</span><br></pre></td></tr></table></figure>
+<h4 id="存在性"><a href="#存在性" class="headerlink" title="存在性"></a>存在性</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HEAD _template&#x2F;template_1</span><br></pre></td></tr></table></figure>
+
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%8AElasticSearch%E3%80%8B/" rel="tag">《ElasticSearch》</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+   
+</article>
+
+    
+    <article
+  id="post-ES1：索引Index创建"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/11/26/ES1%EF%BC%9A%E7%B4%A2%E5%BC%95Index%E5%88%9B%E5%BB%BA/"
+    >索引创建</a> 
+</h2>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2020/11/26/ES1%EF%BC%9A%E7%B4%A2%E5%BC%95Index%E5%88%9B%E5%BB%BA/" class="article-date">
+  <time datetime="2020-11-26T02:43:50.064Z" itemprop="datePublished">2020-11-26</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/ElasticSearch/">ElasticSearch</a>
+  </div>
+   
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="索引创建"><a href="#索引创建" class="headerlink" title="索引创建"></a>索引创建</h1><h3 id="一、创建索引"><a href="#一、创建索引" class="headerlink" title="一、创建索引"></a>一、创建索引</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PUT  twitter</span><br></pre></td></tr></table></figure>
+<h4 id="1-索引命名限制"><a href="#1-索引命名限制" class="headerlink" title="1. 索引命名限制"></a>1. 索引命名限制</h4><ul>
+<li>  全小写</li>
+<li>  禁用字符字符： <code>\</code>, <code>/</code>, <code>*</code>, <code>?</code>, <code>&quot;</code>, <code>&lt;</code>, <code>&gt;</code>, <code>|</code>, <code> </code> (space character), <code>,</code>, <code>#</code></li>
+<li>  7.0以前可用 (<code>:</code>), 之后的版本禁止</li>
+<li>  不可用在开头：<code>-</code>, <code>_</code>, <code>+</code></li>
+<li>  不可以叫做：<code>.</code> or <code>..</code></li>
+<li>  不能长于255 字节， (注意是字节，所以多字节字符会快速用完字节数，比如汉字)</li>
+</ul>
+<h4 id="2-请求体功能"><a href="#2-请求体功能" class="headerlink" title="2. 请求体功能"></a>2. 请求体功能</h4><p><a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/6.5/indices-create-index.html#create-index-settings">配置索引</a><br><a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/6.5/indices-create-index.html#mappings">配置映射</a><br><a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/6.5/indices-create-index.html#create-index-aliases">配置别名</a></p>
+<h4 id="3-请求结果"><a href="#3-请求结果" class="headerlink" title="3. 请求结果"></a>3. 请求结果</h4><p><a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/6.5/indices-create-index.html#create-index-wait-for-active-shards">结果功能与配置</a></p>
+<h3 id="二、索引文档时自动创建索引"><a href="#二、索引文档时自动创建索引" class="headerlink" title="二、索引文档时自动创建索引"></a>二、索引文档时自动创建索引</h3><p>索引文档时，如果索引不存在，将会被自动创建。</p>
+<h3 id="1-配置开关"><a href="#1-配置开关" class="headerlink" title="1. 配置开关"></a>1. 配置开关</h3><p>   通过配置控制是否开启自动创建索引</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">PUT _cluster&#x2F;settings</span><br><span class="line">&#123;</span><br><span class="line">    &quot;persistent&quot;: &#123;</span><br><span class="line">        &quot;action.auto_create_index&quot;: &quot;twitter,index10,-index1*,+ind*&quot; </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">+:允许匹配的索引被自动创建</span><br><span class="line">-:禁止匹配的索引被自动创建</span><br><span class="line"></span><br><span class="line">PUT _cluster&#x2F;settings</span><br><span class="line">&#123;</span><br><span class="line">    &quot;persistent&quot;: &#123;</span><br><span class="line">        &quot;action.auto_create_index&quot;: &quot;false&quot; </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">false:禁止所有的索引被自动创建</span><br><span class="line">PUT _cluster&#x2F;settings</span><br><span class="line">&#123;</span><br><span class="line">    &quot;persistent&quot;: &#123;</span><br><span class="line">        &quot;action.auto_create_index&quot;: &quot;true&quot; </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">true:允许所有的索引被自动创建</span><br></pre></td></tr></table></figure>
+<h3 id="三、索引模板"><a href="#三、索引模板" class="headerlink" title="三、索引模板"></a>三、索引模板</h3><p>（1）索引模板通过一个表达式，匹配到一系列索引名。当匹配的索引被创建时，模板里的settings和mappings将会被应用。</p>
+<p>（2）创建索引时，请求体内的settings和mappings将覆盖模板内的设置。</p>
+<p>（3）索引模板既会在Create Index时触发，也会在自动创建索引时触发。并且前者因为可以带请求体，所以可以应用（2）的条件。后者因为无法带请求体，将会完全应用模板内的设置。</p>
+<p>（4）多个模板匹配同一索引，将会自动合并配置项，高序号（order）的会覆盖低序号的配置。总体顺序：<br>请求体 &gt; order = 2 &gt; order = 1</p>
+<p>（5）模板内支持 C-style/* */的注释。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">PUT _template&#x2F;template_1</span><br><span class="line">&#123;</span><br><span class="line">	&quot;index_patterns&quot;: [&quot;te*&quot;, &quot;bar*&quot;],</span><br><span class="line">	&quot;settings&quot;: &#123;</span><br><span class="line">		&quot;number_of_shards&quot;: 1</span><br><span class="line">	&#125;,</span><br><span class="line">	&quot;order&quot;  :  1,</span><br><span class="line">	&quot;mappings&quot;: &#123;</span><br><span class="line">		&quot;_doc&quot;: &#123;</span><br><span class="line">			&quot;_source&quot;: &#123;</span><br><span class="line">				&quot;enabled&quot;: false</span><br><span class="line">			&#125;,</span><br><span class="line">			&quot;properties&quot;: &#123;</span><br><span class="line">				&quot;host_name&quot;: &#123;</span><br><span class="line">					&quot;type&quot;: &quot;keyword&quot;</span><br><span class="line">				&#125;,</span><br><span class="line">				&quot;created_at&quot;: &#123;</span><br><span class="line">					&quot;type&quot;: &quot;date&quot;,</span><br><span class="line">					&quot;format&quot;: &quot;EEE MMM dd HH:mm:ss Z YYYY&quot;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;,</span><br><span class="line">	&quot;aliases&quot;: &#123;</span><br><span class="line">		&quot;alias1&quot;: &#123;&#125;,</span><br><span class="line">		&quot;alias2&quot;: &#123;</span><br><span class="line">			&quot;filter&quot;: &#123;</span><br><span class="line">				&quot;term&quot;: &#123;</span><br><span class="line">					&quot;user&quot;: &quot;kimchy&quot;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;,</span><br><span class="line">			&quot;routing&quot;: &quot;kimchy&quot;</span><br><span class="line">		&#125;,</span><br><span class="line">		&quot;&#123;index&#125;-alias&quot;: &#123;&#125;</span><br><span class="line">		&#x2F;*&#123;index&#125;占位符将会被替换为真的索引名*&#x2F;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%8AElasticSearch%E3%80%8B/" rel="tag">《ElasticSearch》</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+   
+</article>
+
+    
+    <article
+  id="post-二进制"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/11/24/%E4%BA%8C%E8%BF%9B%E5%88%B6/"
+    >二进制</a> 
+</h2>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2020/11/24/%E4%BA%8C%E8%BF%9B%E5%88%B6/" class="article-date">
+  <time datetime="2020-11-24T07:19:11.971Z" itemprop="datePublished">2020-11-24</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Redis/">Redis</a>
+  </div>
+   
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="二进制"><a href="#二进制" class="headerlink" title="二进制"></a>二进制</h1><h3 id="Reids命令"><a href="#Reids命令" class="headerlink" title="Reids命令"></a>Reids命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">参考书：</span><br><span class="line">  《Reids设计与实现3.0》22章</span><br><span class="line">  《Redis开发与运维》3章5节</span><br><span class="line"></span><br><span class="line">1.设置某位置bit值，从右往左，首索引0，</span><br><span class="line">IN: SETBIT key_name position_from_right value_1_or_0</span><br><span class="line">RE: 指定偏移量原来储存的位, 异常情况返回0</span><br><span class="line">&gt; SETBIT bitkey 0 1</span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">2.取某位置bit值，从右往左，首索引0，</span><br><span class="line">IN: GETBIT key_name position_from_right</span><br><span class="line">RE: value_1_or_0, 异常情况返回0</span><br><span class="line">&gt; GETBIT bitkey 0</span><br><span class="line">1</span><br><span class="line"></span><br><span class="line">3.统计数组内1的数量</span><br><span class="line">IN: BITCOUNT key_name</span><br><span class="line">RE: count</span><br><span class="line">&gt; BITCOUNT bitkey</span><br><span class="line">1</span><br><span class="line">#Redis使用SWAR算法降低映射表键长，然后使用查表法查1字节（8位）的键得出长度。</span><br><span class="line"></span><br><span class="line">4.位运算</span><br><span class="line">IN: BITOP operation_name result_set_key_name op_key1 op_key2 op_key3...</span><br><span class="line">RE:</span><br><span class="line">operation_name :</span><br><span class="line">  与（&amp;）：AND</span><br><span class="line">  或（|）：OR</span><br><span class="line">  非（~）：NOT</span><br><span class="line">  异或（^）：XOR</span><br><span class="line">&gt; BITOP NOT result bitkey</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-data/redis/docs/current/reference/html/#appendix:command-reference">Redis commands supported by RedisTemplate</a></p>
+<h3 id="位操作的应用"><a href="#位操作的应用" class="headerlink" title="位操作的应用"></a>位操作的应用</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">参考书：</span><br><span class="line">  《Netty实战》4.3.1</span><br><span class="line">  SelectionKey</span><br><span class="line">  public static final int OP_ACCEPT &#x3D; 1 &lt;&lt; 4;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;计算是否包含某种情况</span><br><span class="line">  public final boolean isAcceptable() &#123;</span><br><span class="line">    return (readyOps() &amp; OP_ACCEPT) !&#x3D; 0;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  if ((readyOps &amp; (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) !&#x3D; 0 || readyOps &#x3D;&#x3D; 0) &#123;</span><br><span class="line">      unsafe.read();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"> &#x2F;&#x2F;添加</span><br><span class="line"> serverChannel.register(selector, SelectionKey.OP_ACCEPT);</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+
+
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%8ARedis%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E3%80%8B/" rel="tag">《Redis与数据结构》</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+   
+</article>
+
+    
+    <article
+  id="post-Windows命令"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/11/18/Windows%E5%91%BD%E4%BB%A4/"
+    >命令</a> 
+</h2>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2020/11/18/Windows%E5%91%BD%E4%BB%A4/" class="article-date">
+  <time datetime="2020-11-18T07:16:16.744Z" itemprop="datePublished">2020-11-18</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%91%BD%E4%BB%A4/">命令</a>
+  </div>
+   
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="Windows命令"><a href="#Windows命令" class="headerlink" title="Windows命令"></a>Windows命令</h1> 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%8AWindows-%E5%91%BD%E4%BB%A4%E3%80%8B/" rel="tag">《Windows 命令》</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+   
+</article>
+
+    
+    <article
+  id="post-Netty学习"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/11/18/Netty%E5%AD%A6%E4%B9%A0/"
+    >Netty学习</a> 
+</h2>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2020/11/18/Netty%E5%AD%A6%E4%B9%A0/" class="article-date">
+  <time datetime="2020-11-18T06:37:14.216Z" itemprop="datePublished">2020-11-18</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Netty/">Netty</a>
+  </div>
+   
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="Netty的组件模型"><a href="#Netty的组件模型" class="headerlink" title="Netty的组件模型"></a>Netty的组件模型</h1><h2 id="ChannelHandler-的用法"><a href="#ChannelHandler-的用法" class="headerlink" title="ChannelHandler 的用法"></a>ChannelHandler 的用法</h2><h3 id="车辆共享"><a href="#车辆共享" class="headerlink" title="车辆共享"></a>车辆共享</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">因为一个ChannelHandler 可以从属于多个ChannelPipeline，所以它也可以绑定到多个ChannelHandlerContext 实例。对于这种用法指在多个ChannelPipeline 中共享同一个ChannelHandler，对应的ChannelHandler 必须要使用@Sharable 注解标注；否则，试图将它添加到多个ChannelPipeline 时将会触发异常。显而易见，为了安全地被用于多个并发的Channel（即连接），这样的ChannelHandler 必须是线程安全的。</span><br></pre></td></tr></table></figure>
+<p>车辆是可以在多条道路上跑的，当车辆被租用，则可能被其他司机开，因为租车的司机才熟悉当地的路，和当地交通部门有联系。</p>
+<p>租赁分享的车必须是线程安全的，不能因为某一个司机把车子弄脏，导致别人没法用这辆车。</p>
+<h3 id=""><a href="#" class="headerlink" title=""></a></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">为何要共享同一个ChannelHandler 在多个ChannelPipeline中安装同一个ChannelHandler</span><br><span class="line">的一个常见的原因是用于收集跨越多个Channel 的统计信息。</span><br></pre></td></tr></table></figure>
+
+<h2 id="ChannelHandlerContext的用法"><a href="#ChannelHandlerContext的用法" class="headerlink" title="ChannelHandlerContext的用法"></a>ChannelHandlerContext的用法</h2><h3 id="Netty事件流"><a href="#Netty事件流" class="headerlink" title="Netty事件流"></a>Netty事件流</h3><p>当某一辆车的司机（ChannelHandlerContext）通过与交通部门（ChannelPipeline）或者道路部门（Channel ）联系通知一处塌方时，对方总是从第一个司机开始，让他们口口相传直到全部司机知晓。</p>
+<p>如果想阻止这个全线流程，则需要直接联系对应的司机（ChannelHandlerContext），让他向后传递给必要的人就行了。</p>
+<h3 id="自发的司机协会"><a href="#自发的司机协会" class="headerlink" title="自发的司机协会"></a>自发的司机协会</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">另一种高级的用法是缓存到ChannelHandlerContext 的引用以供稍后使用，这可能会发生在任何的ChannelHandler 方法之外，甚至来自于不同的线程。</span><br></pre></td></tr></table></figure>
+<p>也就是说可以脱离Netty的范围管理ChannelHandlerContext ，使各位司机成立独立组织来进行各种控制。</p>
+<h2 id="紧急情况处理"><a href="#紧急情况处理" class="headerlink" title="紧急情况处理"></a>紧急情况处理</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">如果在处理入站事件的过程中有异常被抛出，那么它将从它在ChannelInboundHandler里被触发的那一点开始流经ChannelPipeline。</span><br><span class="line"></span><br><span class="line">因为异常将会继续按照入站方向流动（就像所有的入站事件一样），所以实现了前面所示逻辑的ChannelInboundHandler 通常位于ChannelPipeline 的最后。这确保了所有的入站异常都总是会被处理，无论它们可能会发生在ChannelPipeline 中的什么位置。</span><br><span class="line"></span><br><span class="line">如果你不实现任何处理入站异常的逻辑（或者没有消费该异常），</span><br><span class="line">那么Netty将会记录该异常没有被处理的事实①</span><br></pre></td></tr></table></figure>
+<p>入站异常类似于一辆车上有个人病倒了，但是这辆车上没有医生，怎么办？到站之后转给下一辆车。</p>
+<p>异常处理不是强制的，在一般情况下总安排给最后一辆车，保底。</p>
+<h2 id="Netty协议示例"><a href="#Netty协议示例" class="headerlink" title="Netty协议示例"></a>Netty协议示例</h2><p><a target="_blank" rel="noopener" href="https://github.com/netty/netty/tree/4.1/example">https://github.com/netty/netty/tree/4.1/example</a></p>
+<p>Netty是对网络通信的封装，是取代java.net之类的包的东西。这意味着Netty是很底层的框架，而不是具体的方法。</p>
+<p>如何使用Netty可以结合Jedis对于Netty的使用来学习，里面实现了Redis协议。</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%8ANetty%E3%80%8B/" rel="tag">《Netty》</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+   
+</article>
+
+    
+    <article
+  id="post-基于Spring的Java对象与Redis Hash的转换"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/11/13/%E5%9F%BA%E4%BA%8ESpring%E7%9A%84Java%E5%AF%B9%E8%B1%A1%E4%B8%8ERedis%20Hash%E7%9A%84%E8%BD%AC%E6%8D%A2/"
+    >基于Spring的Java对象与Redis Hash的转换</a> 
+</h2>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2020/11/13/%E5%9F%BA%E4%BA%8ESpring%E7%9A%84Java%E5%AF%B9%E8%B1%A1%E4%B8%8ERedis%20Hash%E7%9A%84%E8%BD%AC%E6%8D%A2/" class="article-date">
+  <time datetime="2020-11-13T12:10:55.899Z" itemprop="datePublished">2020-11-13</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Spring/">Spring</a>
+  </div>
+   
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="基于Spring的Java对象与Redis-Hash的转换"><a href="#基于Spring的Java对象与Redis-Hash的转换" class="headerlink" title="基于Spring的Java对象与Redis Hash的转换"></a>基于Spring的Java对象与Redis Hash的转换</h1><h2 id="Spring-Data-Redis把Java对象转为Redis-Hash的三种方式"><a href="#Spring-Data-Redis把Java对象转为Redis-Hash的三种方式" class="headerlink" title="Spring Data Redis把Java对象转为Redis Hash的三种方式"></a>Spring Data Redis把Java对象转为Redis Hash的三种方式</h2><ul>
+<li><p>  Using <code>HashMapper</code> and <code>HashOperations</code></p>
+</li>
+<li><p>  Using <code>Redis Repositories</code></p>
+</li>
+<li></li>
+<li><p>  Direct mapping, by using <code>HashOperations</code> and a <code>serializer</code></p>
+</li>
+</ul>
+<h2 id="一、使用HashMapper-和HashOperations"><a href="#一、使用HashMapper-和HashOperations" class="headerlink" title="一、使用HashMapper 和HashOperations"></a>一、使用<code>HashMapper</code> 和<code>HashOperations</code></h2><ol>
+<li>HashMapper的作用是将对象转换为Map&lt;K, V&gt;以及转换回来。每个类转换的方式不一样，转出的结果也不一样。以下是HashMapper接口的三个实现：</li>
+</ol>
+<ul>
+<li><p>  <code>org.springframework.data.redis.hash.ObjectHashMapper</code></p>
+</li>
+<li><p> <code>Jackson2HashMapper</code></p>
+</li>
+<li><p>  <code>BeanUtilsHashMapper</code></p>
+</li>
+</ul>
+<p>有些HashMapper在将对象映射为Hash的时候，会将class信息，单独存储为一个键值对，以便识别对象类型。所以这些HashMapper()可以没有泛型。不同Mapper使用的键不同。  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ObjectMapper：&#96;_class -&gt; com.ck.redis.Person&#96;， </span><br><span class="line">Jackson2HashMapper：&#96;@class -&gt; com.ck.redis.Person&#96;，</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>HashOperations是RedisTemplate.opsForHash()的返回值，用于和Redis通信，使用配置的序列化处理器来将任意类型转换成byte[],存储到Redis里就全是byte[]。这个类会进行以下转换过程：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">@Override </span><br><span class="line">public void putAll(K key, Map&lt;? extends HK, ? extends HV&gt; m) &#123;</span><br><span class="line"></span><br><span class="line">   if (m.isEmpty()) &#123;</span><br><span class="line">      return;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   byte[] rawKey &#x3D; rawKey(key);</span><br><span class="line"></span><br><span class="line">   Map&lt;byte[], byte[]&gt; hashes &#x3D; new LinkedHashMap&lt;&gt;(m.size());</span><br><span class="line"></span><br><span class="line">   for (Map.Entry&lt;? extends HK, ? extends HV&gt; entry : m.entrySet()) &#123;</span><br><span class="line">      hashes.put(rawHashKey(entry.getKey()), rawHashValue(entry.getValue()));</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   execute(connection -&gt; &#123;</span><br><span class="line">      connection.hMSet(rawKey, hashes);</span><br><span class="line">      return null;</span><br><span class="line">   &#125;, true);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+关键点：<br>（1）使用rawKey方法，将Redis键转化为byte[],这个值是通过RedisTemplate.setKeySerializer()方法配置的。</li>
+</ol>
+<p>（2）使用rawHashKey方法，将Hash的键转化为byte[],这个值是通过RedisTemplate.setHashKeySerializer()方法配置的。</p>
+<p>（3）使用rawHashValue方法，将Hash的值转化为byte[],这个值是通过RedisTemplate.setHashValueSerializer()方法配置的。</p>
+<ol start="3">
+<li>二者结合，可以转 + 存。HashMapper的作用是对象转Map，所以实际上决定的是Map长什么样。而存到Redis里长什么样，是由序列化决定的。</li>
+</ol>
+<h3 id="ObjectHashMapper"><a href="#ObjectHashMapper" class="headerlink" title="ObjectHashMapper"></a>ObjectHashMapper</h3><ol>
+<li>类源码注释：HashMapper based on MappingRedisConverter. Supports nested properties and simple types like String.</li>
+<li>ObjectHashMapper implements HashMapper&lt;Object, byte[], byte[]&gt;，转换出来是一个Map&lt;byte[], byte[]&gt;</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HashOperations&lt;String, byte[], byte[]&gt; hashOperations &#x3D; redisTemplate.opsForHash();</span><br><span class="line">Person person &#x3D; new Person(&quot;first&quot;,&quot;last&quot;);</span><br><span class="line">HashMapper&lt;Object, byte[], byte[]&gt; mapper &#x3D; new ObjectHashMapper();</span><br><span class="line">Map&lt;byte[], byte[]&gt; mappedHash &#x3D; mapper.toHash(person);</span><br><span class="line">hashOperations.putAll(&quot;person&quot;, mappedHash);</span><br></pre></td></tr></table></figure>
+
+<h3 id="Jackson2HashMapper"><a href="#Jackson2HashMapper" class="headerlink" title="Jackson2HashMapper"></a>Jackson2HashMapper</h3><ol>
+<li><p>类源码注释：ObjectMapper based HashMapper implementation that allows flattening. </p>
+</li>
+<li><p>Jackson2HashMapper implements HashMapper&lt;Object, String, Object&gt;，转换出来是一个Map&lt;String,Object&gt;</p>
+</li>
+<li><p>使用Jackson2HashMapper需要单独引入依赖，因为spring-boot-starter-data-redis没有带相关的依赖。<a target="_blank" rel="noopener" href="https://github.com/FasterXML/jackson">FasterXML Jackson</a></p>
+</li>
+<li><p>它可以将嵌套类映射为json或者扁平化的key，这是一个构造函数的入参。</p>
+</li>
+<li><p>它可以使用指定的com.fasterxml.jackson.databind.ObjectMapper来映射值,是一个构造函数的入参。</p>
+</li>
+</ol>
+<h3 id="BeanUtilsHashMapper"><a href="#BeanUtilsHashMapper" class="headerlink" title="BeanUtilsHashMapper"></a>BeanUtilsHashMapper</h3><ol>
+<li>类源码注释：HashMapper based on Apache Commons BeanUtils project. Does NOT supports nested properties.</li>
+<li> BeanUtilsHashMapper<T> implements HashMapper&lt;T, String, String&gt;，转换出来是一个Map&lt;String,String&gt;，转换出来没有Class信息，因为构造函数需要一个Class入参。</li>
+<li>使用BeanUtilsHashMapper需要单独引入依赖，因为spring-boot-starter-data-redis没有带相关的依赖。org.apache.commons.beanutils.BeanUtils。</li>
+</ol>
+<h2 id="二、使用Redis-Repositories"><a href="#二、使用Redis-Repositories" class="headerlink" title="二、使用Redis Repositories"></a>二、使用<code>Redis Repositories</code></h2><ol>
+<li><p>Redis Repositories require at least Redis Server version 2.8.0 and do not work with transactions. </p>
+</li>
+<li><p>使用@RedisHash(“people”)标注model以后，可以像定义@Entity一样存取Redis实体。</p>
+</li>
+<li><p>public  interface PersonRepository extends CrudRepository&lt;Person, String&gt; { }</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">@RedisHash(&quot;people&quot;)  </span><br><span class="line">public  class Person &#123; </span><br><span class="line">  @Id String id; </span><br><span class="line">  String firstname; </span><br><span class="line">  String lastname; </span><br><span class="line">  Address address; </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public  interface PersonRepository extends CrudRepository&lt;Person, String&gt; &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@Configuration  </span><br><span class="line">@EnableRedisRepositories  </span><br><span class="line">public  class ApplicationConfig &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h2 id="三、使用HashOperations-and-a-serializer"><a href="#三、使用HashOperations-and-a-serializer" class="headerlink" title="三、使用HashOperations and a serializer"></a>三、使用<code>HashOperations</code> and a <code>serializer</code></h2><ul>
+<li><p>  <code>JdkSerializationRedisSerializer</code>, which is used by default for <code>RedisCache</code> and <code>RedisTemplate</code>.</p>
+</li>
+<li><p>  the <code>StringRedisSerializer</code>.</p>
+</li>
+<li><p><code>OxmSerializer</code> for Object/XML mapping through Spring <code>OXM</code> support .</p>
+</li>
+<li><p><code>Jackson2JsonRedisSerializer</code> for   <code>JSON</code></p>
+</li>
+<li><p><code>GenericJackson2JsonRedisSerializer</code> for  <code>JSON</code></p>
+<h3 id=""><a href="#" class="headerlink" title=""></a></h3></li>
+</ul>
+<ol>
+<li>对象会被转成JSON，{“asdf”:“sdaf”}</li>
+<li>String会被转成String，“psers”</li>
+</ol>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%8ASpring-Data%E3%80%8B/" rel="tag">《Spring Data》</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+   
+</article>
+
+    
+    <article
+  id="post-玄"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/11/11/%E7%8E%84/"
+    >状态</a> 
+</h2>
+ 
+
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2020/11/11/%E7%8E%84/" class="article-date">
+  <time datetime="2020-11-11T08:42:20.029Z" itemprop="datePublished">2020-11-11</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8B%BE%E5%91%B3/">拾味</a>
+  </div>
+   
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h1 id="状态"><a href="#状态" class="headerlink" title="状态"></a>状态</h1><p>珍视人与人之间的陌生与疏离，那是不必高素质、不必大差距，却能够自然、自在地保持价值认同的唯一机会。</p>
+<p>以应用技术、学习技术的形式，对目前的系统提出重构思路。<br>熟练使用一些工具，<br>精通调优，</p>
+<p>缺乏一些足够调动人的积极性、有可观投入回报率、可靠可控的目标。<br>一些决策都很难有权威性和说服力，通常都是号召性的。<br>技术上乏善可陈，对于</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%8ABetter-Me%E3%80%8B/" rel="tag">《Better Me》</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+   
+</article>
+
+    
+  </article>
+  
+
+  
+  <nav class="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/page/2/">上一页</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/">下一页</a>
+  </nav>
+  
+</section>
+</div>
+
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2016-2020
+        <i class="ri-heart-fill heart_icon"></i> Grinner C.K.
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        Powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+        <span class="division">|</span>
+        Theme - <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>Visitors:<span id="busuanzi_value_site_uv"></span></s>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>Views:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="书"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags/%E3%80%8A%E5%8A%BF%E7%95%8C%E3%80%8B/">势界</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+
+
+<link rel="stylesheet" href="/css/clipboard.css">
+
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+
+
+<!-- CanvasBackground -->
+
+
+    
+  </div>
+</body>
+
+</html>
